@@ -1,0 +1,33 @@
+{
+  "generationParameters": {
+    "generationDate": "Wed Apr 01 2026 14:54:55 GMT+0700 (Indochina Time)",
+    "generatorPlatform": "Visual Studio Code",
+    "serviceType": "OData URL",
+    "metadataFilename": "",
+    "serviceUrl": "https://idnipcw21.wcsglobal.id:44300/sap/opu/odata4/sap/zui_blok_insp_ov4/srvd/sap/zui_blok_inspc01/0001/",
+    "appName": "ztest_blok_insp",
+    "appTitle": "Custom Blok Inspection",
+    "appDescription": "An SAP Fiori application.",
+    "appNamespace": "zapp",
+    "ui5Theme": "sap_fiori_3",
+    "ui5Version": "1.96.34",
+    "enableCodeAssist": false,
+    "enableEslint": false,
+    "enableTypeScript": false,
+    "showMockDataInfo": true,
+    "generatorVersion": "1.20.0",
+    "template": "List Report Page V4",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [
+      {
+        "type": "Main Entity",
+        "value": "blok_inspc"
+      },
+      {
+        "type": "Navigation Entity",
+        "value": "_blok_inspc_i"
+      }
+    ],
+    "launchText": "To launch the generated application, run the following from the generated application root folder:\n\n```\n    npm start\n```"
+  }
+}

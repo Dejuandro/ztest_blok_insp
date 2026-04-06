@@ -1,0 +1,22 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+    <Dialog id="UploadDialog" title="Upload Data Inspeksi Massal">
+        <content>
+            <VBox id="vboxUploadLayout" class="sapUiSmallMargin">
+                <Text id="textUploadHint" text="Pilih file Excel (.xlsx) untuk menambahkan data inspeksi secara massal." class="sapUiTinyMarginBottom"/>
+                
+                <u:FileUploader 
+                    id="excelUploader" 
+                    fileType="xlsx" 
+                    buttonText="Browse"
+                    width="100%" 
+                    style="Emphasized" />
+            </VBox>
+        </content>
+        <beginButton>
+            <Button id="btnProcessUpload" text="Proses Data" press=".onProcessUpload" type="Accept"/>
+        </beginButton>
+        <endButton>
+            <Button id="btnCancelUpload" text="Batal" press=".onCancelUpload"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

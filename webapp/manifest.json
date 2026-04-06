@@ -1,0 +1,187 @@
+{
+  "_version": "1.37.0",
+  "sap.app": {
+    "id": "zapp.ztestblokinsp",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.20.0",
+      "toolsId": "07fd7976-7010-4386-ad2d-a51db5e58a64"
+    },
+    "dataSources": {
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      },
+      "mainService": {
+        "uri": "/sap/opu/odata4/sap/zui_blok_insp_ov4/srvd/sap/zui_blok_inspc01/0001/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "annotation"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.90.7",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zapp.ztestblokinsp.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "blok_inspcList",
+          "target": "blok_inspcList"
+        },
+        {
+          "pattern": "blok_inspc({key}):?query:",
+          "name": "blok_inspcObjectPage",
+          "target": "blok_inspcObjectPage"
+        },
+        {
+          "pattern": "blok_inspc({key})/_blok_inspc_i({key2}):?query:",
+          "name": "blok_inspc_iObjectPage",
+          "target": "blok_inspc_iObjectPage"
+        }
+      ],
+      "targets": {
+        "blok_inspcList": {
+          "type": "Component",
+          "id": "blok_inspcList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/blok_inspc",
+              "variantManagement": "Page",
+              "navigation": {
+                "blok_inspc": {
+                  "detail": {
+                    "route": "blok_inspcObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "ActionUploadExcel": {
+                      "press": "zapp.ztestblokinsp.ext.controller.ListReportHeader.UploadExcel",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Upload Excel"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "blok_inspcObjectPage": {
+          "type": "Component",
+          "id": "blok_inspcObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/blok_inspc",
+              "navigation": {
+                "_blok_inspc_i": {
+                  "detail": {
+                    "route": "blok_inspc_iObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "blok_inspc_iObjectPage": {
+          "type": "Component",
+          "id": "blok_inspc_iObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/blok_inspc/_blok_inspc_i"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}
