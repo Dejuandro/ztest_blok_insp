@@ -10,11 +10,21 @@
                     buttonText="Browse"
                     width="100%" 
                     style="Emphasized" />
+                    
+                <Input 
+                    id="inputKeterangan" 
+                    placeholder="Masukkan keterangan inspeksi..." 
+                    class="sapUiSmallMarginBottom" />
+
+                <CheckBox 
+                    id="chkSimpanDraft" 
+                    text="Tandai sebagai data prioritas" />
             </VBox>
         </content>
         <buttons>
             <Button id="btnDownloadTemplate" text="Download Template" press="onDownloadTemplate" type="Transparent"/>
             <Button id="btnProcessUpload" text="Proses Data" press="onProcessUpload" type="Accept"/>
+            <Button id="btnProcessWithFunction" text="Proses With Function" press="onProcessWithFunction" type="Emphasized"/>
             <Button id="btnCancelUpload" text="Batal" press="onCancelUpload"/>
         </buttons>
     </Dialog>

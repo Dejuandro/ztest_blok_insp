@@ -137,6 +137,12 @@
               "content": {
                 "header": {
                   "actions": {
+                    "ActionDownloadTemplate": {
+                      "press": "zapp.ztestblokinsp.ext.controller.ListReportHeader.DownloadTemplate",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Download Template"
+                    },
                     "ActionUploadExcel": {
                       "press": "zapp.ztestblokinsp.ext.controller.ListReportHeader.UploadExcel",
                       "visible": true,

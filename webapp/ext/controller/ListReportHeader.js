@@ -13,6 +13,8 @@ sap.ui.define([
     var _sDialogId = "UploadDialog";
     var _sUploaderId = "excelUploader";
     var _sServiceUrl = "/sap/opu/odata4/sap/zui_blok_insp_ov4/srvd/sap/zui_blok_inspc01/0001/";
+    var _sProcessWithFunctionRelativePath = "blok_inspc/com.sap.gateway.srvd.zui_blok_inspc01.v0001.proseswithfunction2";
+    var _sProcessWithFunctionPayloadParameter = "payload_json";
     var _mColumnMap = {
         estateid: "EstateID",
         estate: "EstateID",
@@ -520,6 +522,14 @@ sap.ui.define([
         });
     }
 
+    function _createFunctionRequestPayload(aPayloads) {
+        var oPayload = {};
+
+        oPayload[_sProcessWithFunctionPayloadParameter] = JSON.stringify(aPayloads);
+
+        return oPayload;
+    }
+
     function _createEntry(oPayload, sCsrfToken) {
         return _ajax({
             url: _sServiceUrl + "blok_inspc",
@@ -529,6 +539,21 @@ sap.ui.define([
                 "Accept": "application/json"
             },
             data: JSON.stringify(oPayload),
+            contentType: "application/json",
+            dataType: "json",
+            processData: false
+        });
+    }
+
+    function _callProcessWithFunction(aPayloads, sCsrfToken) {
+        return _ajax({
+            url: _sServiceUrl + _sProcessWithFunctionRelativePath,
+            method: "POST",
+            headers: {
+                "X-CSRF-Token": sCsrfToken,
+                "Accept": "application/json"
+            },
+            data: JSON.stringify(_createFunctionRequestPayload(aPayloads)),
             contentType: "application/json",
             dataType: "json",
             processData: false
@@ -565,6 +590,44 @@ sap.ui.define([
 
         MessageBox.error(sMessage, {
             title: "Upload dibatalkan"
+        });
+    }
+
+    function _preparePayloadsFromFile(oFile) {
+        return _loadXlsxLibrary().then(function (XLSX) {
+            return _readFileAsArrayBuffer(oFile).then(function (aBuffer) {
+                var oWorkbook = XLSX.read(aBuffer, {
+                    type: "array",
+                    cellDates: true
+                });
+                var sFirstSheetName = oWorkbook.SheetNames[0];
+                var oFirstSheet;
+                var aRows;
+                var oValidationResult;
+
+                if (!sFirstSheetName) {
+                    throw new Error("File Excel tidak memiliki worksheet yang bisa dibaca.");
+                }
+
+                oFirstSheet = oWorkbook.Sheets[sFirstSheetName];
+                aRows = XLSX.utils.sheet_to_json(oFirstSheet, {
+                    raw: true,
+                    defval: null
+                });
+
+                if (!aRows.length) {
+                    throw new Error("Sheet pertama kosong. Tidak ada data yang bisa diproses.");
+                }
+
+                oValidationResult = _buildPayloads(aRows, XLSX);
+
+                if (oValidationResult.errors.length) {
+                    _showValidationErrors(oValidationResult.errors);
+                    return null;
+                }
+
+                return oValidationResult.payloads;
+            });
         });
     }
 
@@ -640,7 +703,6 @@ sap.ui.define([
 
     function onProcessUpload() {
         var oFile = _getSelectedFile();
-        var oValidationResult;
         var oProcessPromise;
 
         if (!oFile) {
@@ -650,41 +712,14 @@ sap.ui.define([
 
         _setDialogBusy(true);
 
-        oProcessPromise = _loadXlsxLibrary()
-            .then(function (XLSX) {
-                return _readFileAsArrayBuffer(oFile).then(function (aBuffer) {
-                    var oWorkbook = XLSX.read(aBuffer, {
-                        type: "array",
-                        cellDates: true
-                    });
-                    var sFirstSheetName = oWorkbook.SheetNames[0];
-                    var oFirstSheet;
-                    var aRows;
+        oProcessPromise = _preparePayloadsFromFile(oFile)
+            .then(function (aPayloads) {
+                if (!aPayloads) {
+                    return null;
+                }
 
-                    if (!sFirstSheetName) {
-                        throw new Error("File Excel tidak memiliki worksheet yang bisa dibaca.");
-                    }
-
-                    oFirstSheet = oWorkbook.Sheets[sFirstSheetName];
-                    aRows = XLSX.utils.sheet_to_json(oFirstSheet, {
-                        raw: true,
-                        defval: null
-                    });
-
-                    if (!aRows.length) {
-                        throw new Error("Sheet pertama kosong. Tidak ada data yang bisa diproses.");
-                    }
-
-                    oValidationResult = _buildPayloads(aRows, XLSX);
-
-                    if (oValidationResult.errors.length) {
-                        _showValidationErrors(oValidationResult.errors);
-                        return null;
-                    }
-
-                    return _fetchCsrfToken().then(function (sCsrfToken) {
-                        return _uploadPayloads(oValidationResult.payloads, sCsrfToken);
-                    });
+                return _fetchCsrfToken().then(function (sCsrfToken) {
+                    return _uploadPayloads(aPayloads, sCsrfToken);
                 });
             })
             .then(function (iSuccessCount) {
@@ -718,10 +753,65 @@ sap.ui.define([
         });
     }
 
+    function onProcessWithFunction() {
+        var Text = sap.ui.getCore().byId('inputKeterangan');
+        console.log(Text.getValue(),'Ini isi dari text');
+        var checkbox = sap.ui.getCore().byId('chkSimpanDraft');
+        console.log(checkbox.getSelected())
+        // var oFile = _getSelectedFile();
+        // var oProcessPromise;
+
+        // if (!oFile) {
+        //     MessageBox.warning("Pilih file Excel (.xlsx) terlebih dahulu sebelum diproses.");
+        //     return;
+        // }
+
+        // _setDialogBusy(true);
+
+        // oProcessPromise = _preparePayloadsFromFile(oFile)
+        //     .then(function (aPayloads) {
+        //         if (!aPayloads) {
+        //             return null;
+        //         }
+
+        //         return _fetchCsrfToken().then(function (sCsrfToken) {
+        //             return _callProcessWithFunction(aPayloads, sCsrfToken).then(function () {
+        //                 return aPayloads.length;
+        //             });
+        //         });
+        //     })
+        //     .then(function (iProcessedCount) {
+        //         if (iProcessedCount === null) {
+        //             return;
+        //         }
+
+        //         MessageToast.show(iProcessedCount + " data berhasil dikirim ke proseswithfunction.");
+        //         _closeDialog();
+        //     })
+        //     .catch(function (oError) {
+        //         var sMessage = oError.message || _extractAjaxErrorMessage(oError);
+        //         console.log(sMessage, "ERROR !!")
+        //         if (oError && oError.xhr && oError.xhr.status === 404) {
+        //             sMessage = "Endpoint action proseswithfunction belum ditemukan di service OData. Pastikan action RAP sudah diexpose ke service binding dengan path '" + _sProcessWithFunctionRelativePath + "'.";
+        //         }
+
+        //         MessageBox.error(sMessage, {
+        //             title: "Proses With Function gagal"
+        //         });
+        //     });
+
+        // oProcessPromise.then(function () {
+        //     _setDialogBusy(false);
+        // }, function () {
+        //     _setDialogBusy(false);
+        // });
+    }
+
     _oDialogController = {
         onCancelUpload: onCancelUpload,
         onDownloadTemplate: onDownloadTemplate,
-        onProcessUpload: onProcessUpload
+        onProcessUpload: onProcessUpload,
+        onProcessWithFunction: onProcessWithFunction
     };
 
     return {
@@ -742,8 +832,10 @@ sap.ui.define([
             });
         },
 
+        DownloadTemplate: onDownloadTemplate,
         onCancelUpload: onCancelUpload,
         onDownloadTemplate: onDownloadTemplate,
-        onProcessUpload: onProcessUpload
+        onProcessUpload: onProcessUpload,
+        onProcessWithFunction: onProcessWithFunction
     };
 });
